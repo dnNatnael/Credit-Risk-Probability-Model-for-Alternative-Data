@@ -186,6 +186,9 @@ flowchart LR
     E --> F[Implementation]
     F --> G[Monitoring & Governance]
     G --> A
+```
+
+```mermaid
 flowchart TB
     A[Board of Directors] --> B[Risk Committee]
     B --> C[Credit Risk Management]
@@ -193,3 +196,4 @@ flowchart TB
     D --> E[Model Validation Team]
     E --> F[Documentation & Reporting]
     F --> G[Regulatory Submission]
+```
