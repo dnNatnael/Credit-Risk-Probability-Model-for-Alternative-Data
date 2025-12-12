@@ -186,7 +186,6 @@ flowchart LR
     E --> F[Implementation]
     F --> G[Monitoring & Governance]
     G --> A
-
 flowchart TB
     A[Board of Directors] --> B[Risk Committee]
     B --> C[Credit Risk Management]
