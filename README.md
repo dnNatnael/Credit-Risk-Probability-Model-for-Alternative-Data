@@ -180,7 +180,7 @@ This ensures compliance without sacrificing analytical power.
 ```mermaid
 flowchart LR
     A[Data Collection] --> B[Data Cleaning & Preprocessing]
-    B --> C[Feature Engineering (incl. WoE)]
+    B --> C[Feature Engineering incl. WoE]
     C --> D[Model Development]
     D --> E[Model Validation]
     E --> F[Implementation]
@@ -191,7 +191,6 @@ flowchart TB
     A[Board of Directors] --> B[Risk Committee]
     B --> C[Credit Risk Management]
     C --> D[Model Development Team]
-    C --> E[Model Validation Team]
-    D --> F[Documentation & Reporting]
-    E --> F
+    D --> E[Model Validation Team]
+    E --> F[Documentation & Reporting]
     F --> G[Regulatory Submission]
