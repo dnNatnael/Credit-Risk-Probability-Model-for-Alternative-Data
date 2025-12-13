@@ -5,3 +5,7 @@ venv/
 #csv files
 *.csv
 data/
+
+# Byte-compiled / optimized files
+__pycache__/
+*.py[cod]
