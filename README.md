@@ -132,6 +132,112 @@ A poor proxy can distort:
 
 ---
 
+## 4. Proxy Target Variable Engineering Implementation
+
+This project implements a **RFM-based proxy target variable** to identify high-risk customers from transactional behavior patterns.
+
+### 📊 Methodology
+
+The proxy target variable (`is_high_risk`) is created using the following approach:
+
+1. **RFM Metrics Calculation**
+   - **Recency (R)**: Number of days since the customer's most recent transaction
+   - **Frequency (F)**: Total number of transactions per customer
+   - **Monetary (M)**: Total transaction amount per customer
+
+2. **Customer Segmentation**
+   - Apply K-Means clustering (n_clusters=3) on scaled RFM features
+   - Use StandardScaler for feature normalization
+   - Random state=42 for reproducibility
+
+3. **High-Risk Identification**
+   - Analyze cluster centroids to identify least engaged segment
+   - High-risk cluster characterized by:
+     - High Recency (long time since last transaction)
+     - Low Frequency
+     - Low Monetary value
+   - Create binary target: `is_high_risk = 1` for least engaged cluster, `0` otherwise
+
+### 🚀 Usage
+
+#### Command Line Interface
+
+```bash
+# Basic usage with default parameters
+python scripts/create_proxy_target.py
+
+# Custom input/output paths
+python scripts/create_proxy_target.py \
+    --input data/raw/data.csv \
+    --output data/processed/data_with_target.csv \
+    --n-clusters 3 \
+    --random-state 42
+```
+
+#### Python API
+
+```python
+from src.data_processing import create_proxy_target_variable
+import pandas as pd
+
+# Load your transactional data
+df = pd.read_csv('data/raw/data.csv')
+
+# Create proxy target variable
+df_with_target, rfm_summary, metadata = create_proxy_target_variable(
+    df=df,
+    customer_id_col='CustomerId',
+    transaction_date_col='TransactionStartTime',  # or 'TransactionDate'
+    transaction_amount_col='Amount',  # or 'TransactionAmount'
+    n_clusters=3,
+    random_state=42
+)
+
+# The target variable is now available
+print(df_with_target['is_high_risk'].value_counts())
+```
+
+### 📁 Output Files
+
+The script generates three output files:
+
+1. **`data/processed/data_with_target.csv`**
+   - Original transactional data with added `is_high_risk` column
+
+2. **`data/processed/rfm_summary.csv`**
+   - Customer-level RFM metrics and cluster assignments
+   - Columns: `CustomerId`, `Recency`, `Frequency`, `Monetary`, `Cluster`, `is_high_risk`
+
+3. **`data/processed/target_metadata.json`**
+   - Metadata including:
+     - High-risk cluster ID
+     - Target variable distribution
+     - RFM statistics
+     - Cluster summary
+
+### 📚 Examples
+
+See `examples/proxy_target_engineering_example.py` for comprehensive examples demonstrating:
+- Basic RFM calculation
+- Customer segmentation
+- Complete pipeline usage
+- Handling different column name formats
+
+### ⚙️ Implementation Details
+
+The implementation is located in:
+- **`src/data_processing.py`**: Core functions for RFM calculation and clustering
+- **`create_proxy_target.py`**: Command-line interface script
+- **`examples/proxy_target_engineering_example.py`**: Usage examples
+
+Key functions:
+- `calculate_rfm_metrics()`: Compute RFM metrics per customer
+- `segment_customers_with_kmeans()`: Apply K-Means clustering
+- `identify_high_risk_cluster()`: Identify least engaged cluster
+- `create_proxy_target_variable()`: Complete end-to-end pipeline
+
+---
+
 ## 3. Trade-offs Between Interpretable and Complex Models in a Regulated Environment
 
 ### 🔵 Interpretable Models (Logistic Regression + WoE)
