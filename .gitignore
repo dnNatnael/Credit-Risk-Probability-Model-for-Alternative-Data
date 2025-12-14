@@ -1,11 +1,22 @@
-# Virtual environments
-venv/
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Virtual environment
 .venv/
+
+# VS Code
+.vscode/
+
+# MLflow
+mlruns/
+mlflow.db
+
+# Logs
+*.log
+
 
 #csv files
 *.csv
 data/
-
-# Byte-compiled / optimized files
-__pycache__/
-*.py[cod]

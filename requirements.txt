@@ -5,4 +5,8 @@ scikit-learn
 requests
 python-dotenv
 gunicorn
-pytest  
+pytest
+mlflow
+matplotlib
+seaborn
+xgboost  
