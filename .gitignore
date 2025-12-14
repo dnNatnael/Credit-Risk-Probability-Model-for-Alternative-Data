@@ -20,3 +20,5 @@ mlflow.db
 #csv files
 *.csv
 data/
+
+docs/
