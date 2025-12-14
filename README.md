@@ -303,3 +303,267 @@ flowchart TB
     E --> F[Documentation & Reporting]
     F --> G[Regulatory Submission]
 ```
+---
+
+
+# 🤖 ML Training Pipeline with MLflow Tracking
+
+## 🎯 Overview
+
+This project includes a complete machine learning training pipeline with:
+- **Multiple Algorithms**: Logistic Regression, Decision Tree, Random Forest, Gradient Boosting
+- **Hyperparameter Tuning**: Grid Search optimization for each model
+- **MLflow Integration**: Complete experiment tracking with metrics, parameters, and model artifacts
+- **Model Registry**: Automatic registration of best-performing models
+- **Unit Testing**: Comprehensive pytest test suite
+- **Reproducibility**: Fixed random states and structured data processing
+
+## 🚀 Quick Start
+
+### 1. Install Dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+### 2. Run the Complete Training Pipeline
+
+```bash
+python scripts/run_training.py
+```
+
+This will:
+- Create a sample dataset (1000 samples)
+- Train 4 different models with hyperparameter tuning
+- Track all experiments in MLflow
+- Compare model performance
+- Register the best model
+
+### 3. Start MLflow UI
+
+```bash
+mlflow ui
+```
+
+Then open http://localhost:5000 to explore results.
+
+## 📊 Model Training Details
+
+### Supported Models
+
+1. **Logistic Regression**
+   - Hyperparameters: C (regularization), penalty (L1/L2)
+   - Best for: Interpretability and regulatory compliance
+
+2. **Decision Tree**
+   - Hyperparameters: max_depth, min_samples_split, min_samples_leaf
+   - Best for: Feature importance and rule extraction
+
+3. **Random Forest**
+   - Hyperparameters: n_estimators, max_depth, min_samples_split
+   - Best for: Robust performance and feature importance
+
+4. **Gradient Boosting**
+   - Hyperparameters: n_estimators, learning_rate, max_depth
+   - Best for: High predictive performance
+
+### Evaluation Metrics
+
+All models are evaluated using:
+- **Accuracy**: Overall classification accuracy
+- **Precision**: True positives / (True positives + False positives)
+- **Recall**: True positives / (True positives + False negatives)
+- **F1 Score**: Harmonic mean of precision and recall
+- **ROC-AUC**: Area under the ROC curve (primary metric for model selection)
+
+### MLflow Tracking
+
+Each training run logs:
+- **Parameters**: All hyperparameters used
+- **Metrics**: All evaluation metrics
+- **Artifacts**: Trained model objects
+- **Feature Importance**: When available (tree-based models)
+
+## 🧪 Testing
+
+### Run All Tests
+
+```bash
+pytest tests/ -v
+```
+
+### Test Coverage
+
+The test suite includes:
+
+1. **Data Processing Tests** (`tests/test_data_processing.py`)
+   - RFM metrics calculation
+   - Proxy target variable creation
+   - Edge case handling
+   - Reproducibility verification
+
+2. **ML Training Tests** (`tests/test_ml_training.py`)
+   - Pipeline initialization
+   - Data preparation and scaling
+   - Model configuration
+   - Evaluation metrics
+   - Sample dataset generation
+
+### Example Test Output
+
+```bash
+tests/test_data_processing.py::TestDataProcessing::test_calculate_rfm_metrics_basic PASSED
+tests/test_data_processing.py::TestDataProcessing::test_create_proxy_target_variable PASSED
+tests/test_ml_training.py::TestMLTraining::test_create_sample_dataset PASSED
+tests/test_ml_training.py::TestMLTraining::test_data_preparation PASSED
+```
+
+## 📈 Usage Examples
+
+### Basic Training Pipeline
+
+```python
+from src.ml_training import MLTrainingPipeline, create_sample_dataset
+
+# Create sample data
+df = create_sample_dataset(n_samples=1000, random_state=42)
+
+# Initialize pipeline
+pipeline = MLTrainingPipeline(experiment_name="my_experiment")
+
+# Prepare data
+X_train, X_test, y_train, y_test, features = pipeline.prepare_data(df)
+
+# Train all models
+pipeline.train_all_models(X_train, X_test, y_train, y_test, features)
+
+# Compare results
+comparison = pipeline.compare_models()
+print(comparison)
+
+# Get best model
+best_name, best_model, metrics = pipeline.get_best_model()
+print(f"Best model: {best_name} with ROC-AUC: {metrics['roc_auc']:.4f}")
+```
+
+### Custom Training Configuration
+
+```python
+# Train with custom parameters
+pipeline = MLTrainingPipeline(
+    experiment_name="custom_experiment",
+    random_state=123
+)
+
+# Use custom features
+custom_features = ['Recency', 'Frequency']
+X_train, X_test, y_train, y_test, _ = pipeline.prepare_data(
+    df, 
+    feature_cols=custom_features,
+    test_size=0.3
+)
+
+# Train specific model
+best_model, metrics, params = pipeline.train_model_with_tuning(
+    'random_forest', X_train, y_train, X_test, y_test
+)
+```
+
+## 🔧 Advanced Configuration
+
+### Custom Hyperparameter Grids
+
+Modify the `get_model_configs()` method in `MLTrainingPipeline` to customize hyperparameter search spaces:
+
+```python
+def get_model_configs(self):
+    return {
+        'logistic_regression': {
+            'model': LogisticRegression(random_state=self.random_state),
+            'param_grid': {
+                'C': [0.01, 0.1, 1.0, 10.0, 100.0],  # Extended range
+                'penalty': ['l1', 'l2', 'elasticnet'],
+                'solver': ['liblinear', 'saga']
+            }
+        }
+        # ... other models
+    }
+```
+
+### MLflow Configuration
+
+Set MLflow tracking URI and experiment location:
+
+```python
+import mlflow
+
+# Use local file store
+mlflow.set_tracking_uri("file:./mlruns")
+
+# Use remote tracking server
+mlflow.set_tracking_uri("http://mlflow-server:5000")
+
+# Set experiment
+mlflow.set_experiment("production_models")
+```
+
+## 📁 Project Structure
+
+```
+├── src/
+│   ├── ml_training.py          # Main ML pipeline with MLflow
+│   ├── data_processing.py      # RFM analysis and proxy targets
+│   └── __init__.py
+├── tests/
+│   ├── test_data_processing.py # Data processing tests
+│   ├── test_ml_training.py     # ML pipeline tests
+│   └── __init__.py
+├── scripts/
+│   ├── run_training.py         # Complete training script
+│   └── create_proxy_target.py  # Proxy target creation
+├── examples/
+│   ├── feature_engineering_example.py
+│   └── proxy_target_engineering_example.py
+├── requirements.txt            # Dependencies
+└── README.md                  # This file
+```
+
+## 🎯 Key Features
+
+### Reproducibility
+- Fixed random states throughout the pipeline
+- Deterministic data splitting with stratification
+- Consistent feature scaling
+
+### Experiment Tracking
+- Complete MLflow integration
+- Automatic parameter and metric logging
+- Model artifact storage
+- Model registry integration
+
+### Model Comparison
+- Standardized evaluation metrics
+- Automated best model selection
+- Performance comparison tables
+- Feature importance tracking
+
+### Testing
+- Comprehensive unit test coverage
+- Edge case handling
+- Reproducibility verification
+- Mock testing for MLflow integration
+
+## 🚀 Next Steps
+
+1. **Explore Results**: Start MLflow UI and compare model performance
+2. **Customize Models**: Modify hyperparameter grids for your use case
+3. **Add Features**: Extend the feature engineering pipeline
+4. **Deploy Models**: Use MLflow Model Registry for model deployment
+5. **Monitor Performance**: Set up model monitoring and drift detection
+
+## 📚 Additional Resources
+
+- [MLflow Documentation](https://mlflow.org/docs/latest/index.html)
+- [Scikit-learn User Guide](https://scikit-learn.org/stable/user_guide.html)
+- [Pytest Documentation](https://docs.pytest.org/)
+- [Basel II Credit Risk Guidelines](https://www.bis.org/publ/bcbs128.htm)
