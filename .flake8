@@ -1,0 +1,25 @@
+[flake8]
+max-line-length = 88
+extend-ignore = 
+    # E203: whitespace before ':'
+    E203,
+    # W503: line break before binary operator
+    W503,
+    # E501: line too long (handled by black)
+    E501
+exclude = 
+    .git,
+    __pycache__,
+    .venv,
+    venv,
+    .pytest_cache,
+    build,
+    dist,
+    *.egg-info
+per-file-ignores =
+    # F401: imported but unused
+    __init__.py:F401
+    # F824: global statements in functions that modify globals
+    src/api/main.py:F824
+    # E402: module level import not at top of file (needed for path setup)
+    tests/test_*.py:E402
